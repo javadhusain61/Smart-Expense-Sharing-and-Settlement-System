@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard - SplitMate</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+        }
+
+        .navbar {
+            background: #2563eb;
+            color: white;
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h2 {
+            margin: 0;
+        }
+
+        .profile {
+    position: relative;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.profile-button {
+    background: transparent;
+    color: white;
+    border: none;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 10px;
+}
+
+.profile-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 45px;
+    background: white;
+    min-width: 150px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    z-index: 1000;
+}
+
+.profile-menu button {
+    width: 100%;
+    padding: 12px 16px;
+    background: white;
+    color: #333;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 15px;
+    border-radius: 8px;
+}
+
+.profile-menu button:hover {
+    background: #f4f7fb;
+}
+
+.profile-menu.show {
+    display: block;
+}
+        
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .welcome {
+            margin-bottom: 30px;
+        }
+
+        .welcome h1 {
+            margin-bottom: 8px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #555;
+        }
+
+        .number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .actions {
+            margin-top: 30px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .action-button {
+    padding: 22px;
+    border: none;
+    border-radius: 12px;
+    background: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    font-size: 16px;
+    text-align: left;
+    transition: 0.2s;
+}
+
+.action-button:hover {
+    background: #eef4ff;
+    transform: translateY(-2px);
+}
+
+.action-button .icon {
+    display: block;
+    font-size: 28px;
+    margin-bottom: 10px;
+}
+
+.action-button strong {
+    display: block;
+    font-size: 17px;
+    margin-bottom: 6px;
+}
+
+.action-button small {
+    color: #777;
+    font-size: 13px;
+}
+
+.clickable-card {
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.clickable-card:hover {
+    transform: translateY(-3px);
+    background: #eef4ff;
+}
+        .recent {
+            margin-top: 30px;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        @media (max-width: 700px) {
+            .cards,
+            .actions {
+                grid-template-columns: 1fr;
+            }
+
+            .navbar {
+                padding: 15px 20px;
+            }
+        }
+        .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-icon {
+    font-size: 30px;
+}
+
+.brand h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.brand span {
+    font-size: 12px;
+    opacity: 0.9;
+    display: block;
+    margin-top: 2px;
+}
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+    <div class="brand">
+        <div class="brand-icon">💰</div>
+
+        <div>
+            <h2>SplitMate</h2>
+            <span>Smart Expense Sharing</span>
+        </div>
+    </div>
+
+    <div class="profile">
+    <button class="profile-button" onclick="toggleProfile()">
+        👤 <span id="profileName">User</span> ▼
+    </button>
+
+    <div class="profile-menu" id="profileMenu">
+        <button onclick="logout()">
+            🚪 Logout
+        </button>
+    </div>
+</div>
+</div>
+
+    <div class="container">
+
+        <div class="welcome">
+            <h1>Welcome 👋</h1>
+            <p>Manage your groups and shared expenses easily.</p>
+        </div>
+
+        <div class="cards">
+
+            <div class="card clickable-card"
+     onclick="window.location.href='my-groups.html'">
+
+    <h3>My Groups</h3>
+    <div class="number">0</div>
+
+</div>
+            <div class="card">
+                <h3>Total Expenses</h3>
+                <div class="number">₹0</div>
+            </div>
+
+            <div class="card">
+                <h3>Pending Settlements</h3>
+                <div class="number">₹0</div>
+            </div>
+
+        </div>
+
+        <div class="actions">
+
+    <button class="action-button"
+        onclick="window.location.href='create-group.html'">
+        <span class="icon">➕</span>
+        <strong>Create Group</strong>
+        <small>Create a new expense group</small>
+    </button>
+
+    <button class="action-button"
+        onclick="openAddExpense()">
+        <span class="icon">💰</span>
+        <strong>Add Expense</strong>
+        <small>Record a shared expense</small>
+    </button>
+
+    <button class="action-button"
+        onclick="openSettlement()">
+        <span class="icon">💳</span>
+        <strong>Settle Payment</strong>
+        <small>Manage pending payments</small>
+    </button>
+
+</div>
+
+       <div class="recent-expenses">
+
+            <h2>Recent Expenses</h2>
+
+            <p>No expenses yet.</p>
+
+        </div>
+
+    </div>
+
+    <script>
+
+async function loadDashboard() {
+
+    // Abhi testing ke liye User ID 2
+    const userId = localStorage.getItem("userId");
+
+    try {
+
+        const response = await fetch(`/dashboard/${userId}`);
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.message || "Unable to load dashboard");
+            return;
+        }
+
+        document.querySelector(".cards .card:nth-child(1) .number").textContent =
+            data.total_groups;
+
+        document.querySelector(".cards .card:nth-child(2) .number").textContent =
+            "₹" + Number(data.total_expenses).toFixed(2);
+
+        document.querySelector(".cards .card:nth-child(3) .number").textContent =
+            "₹" + Number(data.pending_amount).toFixed(2);
+
+    } catch (error) {
+
+        console.log(error);
+        alert("Unable to connect to server");
+
+    }
+}
+async function loadProfile() {
+
+    const userId = localStorage.getItem("userId");
+
+    if (!userId) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    try {
+
+        const response = await fetch(`/user/${userId}`);
+
+        const data = await response.json();
+
+        if (response.ok) {
+            document.getElementById("profileName").textContent =
+                data.name;
+        }
+
+    } catch (error) {
+
+        console.log(error);
+
+    }
+}
+
+function toggleProfile() {
+
+    const menu = document.getElementById("profileMenu");
+
+    menu.classList.toggle("show");
+}
+
+function logout() {
+
+    localStorage.removeItem("userId");
+
+    window.location.href = "login.html";
+}
+ 
+function loadProfile() {
+    const userName = localStorage.getItem("userName");
+
+    if (userName) {
+        document.getElementById("profileName").textContent = userName;
+    }
+}
+function openAddExpense() {
+    window.location.href = "my-groups.html";
+}
+
+function openSettlement() {
+    window.location.href = "my-groups.html";
+}
+async function loadRecentExpenses() {
+
+    const userId = localStorage.getItem("userId");
+
+    const expenseSection = document.querySelector(".recent-expenses");
+
+    try {
+
+        const response = await fetch(`/recent-expenses/${userId}`);
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.log(data.message);
+            return;
+        }
+
+        expenseSection.innerHTML = `
+            <h2>Recent Expenses</h2>
+        `;
+
+        if (data.length === 0) {
+            expenseSection.innerHTML +=
+                "<p>No expenses yet.</p>";
+            return;
+        }
+
+        data.forEach(expense => {
+
+            const div = document.createElement("div");
+
+            div.style.padding = "12px";
+            div.style.marginTop = "10px";
+            div.style.background = "#f4f7fb";
+            div.style.borderRadius = "8px";
+
+            div.innerHTML = `
+                <strong>${expense.description}</strong>
+                <br>
+                💰 ₹${Number(expense.amount).toFixed(2)}
+                <br>
+                👤 Paid by User ${expense.paid_by}
+                <br>
+                👥 ${expense.group_name}
+            `;
+
+            expenseSection.appendChild(div);
+        });
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+loadRecentExpenses();
+
+loadDashboard();
+
+loadProfile();
+
+</script>
+</body>
+
+</html>

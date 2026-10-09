@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Expenses - Smart Expense Sharing</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            margin: 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 7px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .expense {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            background: #fafafa;
+        }
+
+        .expense strong {
+            font-size: 18px;
+        }
+
+        .back {
+            background: #777;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>💰 Expenses</h1>
+
+    <input
+        type="number"
+        id="groupId"
+        placeholder="Enter Group ID"
+    >
+
+    <button onclick="loadExpenses()">
+        View Expenses
+    </button>
+
+    <div id="expenseList"></div>
+
+    <button class="back"
+        onclick="window.location.href='dashboard.html'">
+        Back to Dashboard
+    </button>
+
+</div>
+
+<script>
+
+async function loadExpenses() {
+
+    const groupId = document.getElementById("groupId").value;
+    const expenseList = document.getElementById("expenseList");
+
+    if (!groupId) {
+        alert("Please enter Group ID");
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `/expenses/${groupId}`
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.message || "Unable to load expenses");
+            return;
+        }
+
+        expenseList.innerHTML = "";
+
+        if (data.length === 0) {
+            expenseList.innerHTML =
+                "<p>No expenses found for this group.</p>";
+            return;
+        }
+
+        data.forEach(expense => {
+
+            const div = document.createElement("div");
+
+            div.className = "expense";
+
+            div.innerHTML = `
+                <strong>${expense.description}</strong>
+                <p>💰 Amount: ₹${expense.amount}</p>
+                <p>👤 Paid By User ID: ${expense.paid_by}</p>
+                <p>📅 Date: ${new Date(expense.expense_date).toLocaleString()}</p>
+            `;
+
+            expenseList.appendChild(div);
+
+        });
+
+    } catch (error) {
+
+        console.log(error);
+        alert("Server connection failed");
+
+    }
+}
+
+</script>
+
+</body>
+</html>

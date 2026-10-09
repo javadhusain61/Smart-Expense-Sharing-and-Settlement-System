@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Smart Expense Sharing - SplitMate</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f8ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Background circles */
+        body::before,
+        body::after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            background: #dceaff;
+            z-index: -1;
+        }
+
+        body::before {
+            width: 420px;
+            height: 420px;
+            left: -180px;
+            bottom: -130px;
+        }
+
+        body::after {
+            width: 350px;
+            height: 350px;
+            right: -130px;
+            top: -150px;
+        }
+
+        /* Main Card */
+        .container {
+            width: 90%;
+            max-width: 850px;
+            background: rgba(255, 255, 255, 0.96);
+            padding: 45px 58px 35px;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(30, 70, 120, 0.15);
+            text-align: center;
+        }
+
+        /* Wallet Icon */
+        .logo {
+            width: 105px;
+            height: 105px;
+            margin: 0 auto 15px;
+            border-radius: 50%;
+            background: #eef5ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 58px;
+        }
+
+        /* Heading */
+        h1 {
+            margin: 5px 0 12px;
+            font-size: 43px;
+            color: #18243a;
+            letter-spacing: -1px;
+        }
+
+        h1 span {
+            color: #1677f9;
+        }
+
+        .subtitle {
+            margin: 0 0 32px;
+            color: #68758a;
+            font-size: 20px;
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 17px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 7px 18px rgba(22, 119, 249, 0.20);
+        }
+
+        .login-btn {
+            background: linear-gradient(135deg, #3185ff, #086df5);
+        }
+
+        .register-btn {
+            background: linear-gradient(135deg, #4d98ff, #247cf3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(22, 119, 249, 0.30);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .icon {
+            margin-right: 10px;
+            font-size: 21px;
+        }
+
+        /* Bottom text */
+        .features {
+            margin-top: 30px;
+            color: #536177;
+            font-size: 16px;
+        }
+
+        .features span {
+            margin: 0 10px;
+            color: #b8c1cf;
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+
+            .container {
+                width: 92%;
+                padding: 35px 25px 28px;
+            }
+
+            .logo {
+                width: 85px;
+                height: 85px;
+                font-size: 45px;
+            }
+
+            h1 {
+                font-size: 30px;
+            }
+
+            .subtitle {
+                font-size: 16px;
+            }
+
+            .btn {
+                font-size: 17px;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <div class="logo">
+            💰
+        </div>
+
+        <h1>
+            Smart Expense <span>Sharing</span>
+        </h1>
+
+        <p class="subtitle">
+            Split expenses easily with your friends.
+        </p>
+
+        <!-- Login -->
+        <button class="btn login-btn"
+                onclick="window.location.href='login.html'">
+            <span class="icon">↪</span>
+            Login
+        </button>
+
+        <!-- Register -->
+        <button class="btn register-btn"
+                onclick="window.location.href='register.html'">
+            <span class="icon">👤</span>
+            Register
+        </button>
+
+        <div class="features">
+            Simple
+            <span>•</span>
+            Fast
+            <span>•</span>
+            Secure
+        </div>
+
+    </div>
+
+</body>
+</html>

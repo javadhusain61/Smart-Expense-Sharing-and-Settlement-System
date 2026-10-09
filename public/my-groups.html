@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Groups - SplitMate</title>
+    <style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f4f7fb;
+        color: #222;
+    }
+
+    .navbar {
+        background: #2563eb;
+        color: white;
+        padding: 18px 40px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .navbar h2 {
+        margin: 0;
+        font-size: 22px;
+    }
+
+    .container {
+        width: 92%;
+        max-width: 900px;
+        margin: 35px auto;
+    }
+
+    .back {
+        padding: 10px 16px;
+        border: none;
+        border-radius: 8px;
+        background: #666;
+        color: white;
+        cursor: pointer;
+        margin-bottom: 25px;
+        font-size: 14px;
+        transition: 0.2s;
+    }
+
+    .back:hover {
+        background: #555;
+        transform: translateY(-1px);
+    }
+
+    h1 {
+        margin-bottom: 20px;
+        color: #2563eb;
+    }
+
+    #groups {
+        margin-top: 20px;
+    }
+
+    .group {
+        background: white;
+        padding: 22px;
+        margin-bottom: 16px;
+        border-radius: 14px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        border-left: 4px solid #2563eb;
+        transition: 0.2s;
+    }
+
+    .group:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.10);
+    }
+
+    .group h3 {
+        margin: 0 0 10px;
+        font-size: 20px;
+        color: #222;
+    }
+
+    .group p {
+        color: #666;
+        margin: 6px 0;
+        font-size: 14px;
+    }
+
+    .group button {
+        padding: 11px 18px;
+        margin-top: 12px;
+        border: none;
+        border-radius: 8px;
+        background: #2563eb;
+        color: white;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .group button:hover {
+        background: #1d4ed8;
+        transform: translateY(-1px);
+    }
+
+    @media (max-width: 600px) {
+        .navbar {
+            padding: 16px 20px;
+        }
+
+        .container {
+            width: 94%;
+        }
+
+        .group {
+            padding: 18px;
+        }
+
+        .group button {
+            width: 100%;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+    <h2>💰 SplitMate</h2>
+</div>
+
+<div class="container">
+
+    <button class="back"
+        onclick="window.location.href='dashboard.html'">
+        ← Back to Dashboard
+    </button>
+
+    <h1>👥 My Groups</h1>
+<p style="color:#666;">
+    Manage your shared expense groups
+</p>
+
+    <div id="groups">
+        Loading groups...
+    </div>
+
+</div>
+
+<script>
+
+async function loadGroups() {
+
+    const userId = localStorage.getItem("userId");
+
+    if (!userId) {
+        alert("Please login first");
+        window.location.href = "login.html";
+        return;
+    }
+
+    try {
+
+        const response = await fetch(`/my-groups/${userId}`);
+
+        const data = await response.json();
+
+        const groupsContainer =
+            document.getElementById("groups");
+
+        if (!response.ok) {
+            groupsContainer.innerHTML =
+                "<p>Unable to load groups.</p>";
+            return;
+        }
+
+        groupsContainer.innerHTML = "";
+
+        if (data.length === 0) {
+            groupsContainer.innerHTML =
+                "<p>You are not a member of any group yet.</p>";
+            return;
+        }
+
+        data.forEach(group => {
+
+            const div = document.createElement("div");
+
+            div.className = "group";
+
+            div.innerHTML = `
+                <h3>${group.group_name}</h3>
+
+                <p>
+                    Group ID: ${group.group_id}
+                </p>
+
+                <p>
+                    Created by User ${group.created_by}
+                </p>
+
+                <button onclick="openGroup(${group.group_id})">
+                    Open Group
+                </button>
+            `;
+
+            groupsContainer.appendChild(div);
+
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        document.getElementById("groups").innerHTML =
+            "<p>Server connection failed.</p>";
+    }
+}
+
+function openGroup(groupId) {
+
+    window.location.href =
+        `group-details.html?group_id=${groupId}`;
+}
+
+loadGroups();
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settlement - SplitMate</title>
+    <style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #eef4ff, #f8fafc);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #222;
+    }
+
+    .container {
+        width: 90%;
+        max-width: 520px;
+        background: white;
+        padding: 35px;
+        border-radius: 16px;
+        box-shadow: 0 8px 30px rgba(0,0,0,0.10);
+    }
+
+    .logo {
+        text-align: center;
+        font-size: 42px;
+        margin-bottom: 5px;
+    }
+
+    h1 {
+        text-align: center;
+        color: #2563eb;
+        margin: 0;
+        font-size: 28px;
+    }
+
+    .subtitle {
+        text-align: center;
+        color: #777;
+        font-size: 14px;
+        margin: 8px 0 25px;
+    }
+
+    input {
+        width: 100%;
+        padding: 13px;
+        margin: 8px 0;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 15px;
+        outline: none;
+    }
+
+    input:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.10);
+    }
+
+    button {
+        width: 100%;
+        padding: 13px;
+        margin-top: 10px;
+        border: none;
+        border-radius: 8px;
+        background: #2563eb;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    button:hover {
+        background: #1d4ed8;
+        transform: translateY(-1px);
+    }
+
+    .back {
+        background: #666;
+    }
+
+    .back:hover {
+        background: #555;
+    }
+
+    #result {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 10px;
+        background: #f4f7fb;
+        min-height: 20px;
+    }
+
+    #result > div {
+        padding: 16px !important;
+        margin-bottom: 12px !important;
+        background: white !important;
+        border-radius: 10px !important;
+        border-left: 4px solid #2563eb;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.06);
+    }
+
+    #result strong {
+        color: #222;
+    }
+
+    @media (max-width: 500px) {
+        .container {
+            padding: 28px 22px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="logo">💳</div>
+
+    <h1>Settlement</h1>
+
+    <p class="subtitle">
+        Manage and settle shared payments
+    </p>
+    <input
+        type="number"
+        id="groupId"
+        placeholder="Enter Group ID"
+    >
+
+    <button onclick="calculateSettlement()">
+        Calculate Settlement
+    </button>
+
+    <div id="result"></div>
+
+    <button class="back"
+        onclick="window.location.href='dashboard.html'">
+        Back to Dashboard
+    </button>
+
+</div>
+
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+const groupIdFromUrl = urlParams.get("group_id");
+
+window.onload = function () {
+
+    if (groupIdFromUrl) {
+        document.getElementById("groupId").value = groupIdFromUrl;
+        document.getElementById("groupId").readOnly = true;
+    }
+
+};
+
+async function calculateSettlement() {
+
+    const groupId = document.getElementById("groupId").value;
+    const result = document.getElementById("result");
+
+    if (!groupId) {
+        alert("Please enter Group ID");
+        return;
+    }
+
+    try {
+
+        const response = await fetch(`/settlement/${groupId}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.message || "Settlement calculation failed");
+            return;
+        }
+
+        result.innerHTML = "";
+
+        if (data.length === 0) {
+            result.innerHTML = "<p>No settlement is required.</p>";
+            return;
+        }
+
+        data.forEach(item => {
+
+            const div = document.createElement("div");
+
+            div.style.padding = "12px";
+            div.style.marginBottom = "10px";
+            div.style.background = "white";
+            div.style.borderRadius = "7px";
+
+            div.innerHTML = `
+                <strong>User ${item.from_user_id}</strong>
+                →
+                <strong>User ${item.to_user_id}</strong>
+                <br>
+                Amount: ₹${item.amount}
+                <br><br>
+
+                <button onclick="markAsPaid(
+                    ${groupId},
+                    ${item.from_user_id},
+                    ${item.to_user_id},
+                    ${item.amount}
+                )">
+                    ✅ Mark as Paid
+                </button>
+            `;
+
+            result.appendChild(div);
+
+        });
+
+    } catch (error) {
+
+        console.log(error);
+        alert("Server connection failed");
+
+    }
+}
+
+
+async function markAsPaid(groupId, fromUserId, toUserId, amount) {
+
+    try {
+
+        const response = await fetch("/settle-payment", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                group_id: Number(groupId),
+                from_user_id: Number(fromUserId),
+                to_user_id: Number(toUserId),
+                amount: Number(amount)
+            })
+
+        });
+
+        const data = await response.json();
+
+        alert(data.message);
+
+        if (response.ok) {
+            calculateSettlement();
+        }
+
+    } catch (error) {
+
+        console.log(error);
+        alert("Server connection failed");
+
+    }
+}
+
+</script>
+
+</body>
+</html>

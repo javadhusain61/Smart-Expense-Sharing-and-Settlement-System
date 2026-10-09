@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+   <title>Group Details - SplitMate</title>
+    <style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f7fb;
+        margin: 0;
+        color: #222;
+    }
+
+    .navbar {
+        background: #2563eb;
+        color: white;
+        padding: 18px 40px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+
+    .navbar h2 {
+        margin: 0;
+        font-size: 22px;
+    }
+
+    .container {
+        width: 92%;
+        max-width: 1000px;
+        margin: 30px auto;
+    }
+
+    .card {
+        background: white;
+        padding: 25px;
+        margin-bottom: 22px;
+        border-radius: 14px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+        margin-top: 0;
+        margin-bottom: 8px;
+        font-size: 30px;
+    }
+
+    h2 {
+        margin-top: 0;
+        margin-bottom: 18px;
+    }
+
+    #groupInfo {
+        color: #666;
+        margin-bottom: 5px;
+    }
+
+    .member,
+    .expense {
+        padding: 16px;
+        margin-top: 12px;
+        background: #f4f7fb;
+        border-radius: 10px;
+        border-left: 4px solid #2563eb;
+    }
+
+    .member strong,
+    .expense strong {
+        font-size: 16px;
+    }
+
+    button {
+        padding: 11px 18px;
+        border: none;
+        border-radius: 8px;
+        background: #2563eb;
+        color: white;
+        cursor: pointer;
+        margin-right: 8px;
+        margin-bottom: 8px;
+        font-size: 14px;
+        transition: 0.2s;
+    }
+
+    button:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+
+    .back {
+        background: #666;
+        margin-bottom: 20px;
+    }
+
+    .action {
+        margin-top: 20px;
+    }
+
+    #members,
+    #expenses {
+        margin-top: 5px;
+    }
+
+    @media (max-width: 700px) {
+        .container {
+            width: 94%;
+        }
+
+        .card {
+            padding: 18px;
+        }
+
+        h1 {
+            font-size: 25px;
+        }
+
+        button {
+            width: 100%;
+            margin-right: 0;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<div class="navbar">
+    <h2>Smart Expense Sharing</h2>
+</div>
+
+<div class="container">
+
+    <button class="back"
+        onclick="window.location.href='my-groups.html'">
+        ← Back to My Groups
+    </button>
+
+    <div class="card">
+        <h1 id="groupName">Loading Group...</h1>
+        <p id="groupInfo"></p>
+
+        <div class="action">
+
+            <button onclick="addMember()">
+                👥 Add Member
+            </button>
+
+           <a id="addExpenseBtn"
+   style="display:inline-block;
+          padding:10px 16px;
+          border-radius:6px;
+          background:#2563eb;
+          color:white;
+          text-decoration:none;
+          margin-right:8px;
+          margin-bottom:8px;">
+    💰 Add Expense
+</a>
+
+<a id="settlementBtn"
+   style="display:inline-block;
+          padding:10px 16px;
+          border-radius:6px;
+          background:#2563eb;
+          color:white;
+          text-decoration:none;
+          margin-right:8px;
+          margin-bottom:8px;">
+    💳 Settlement
+</a>
+        </div>
+    </div>
+
+
+    <div class="card">
+
+        <h2>👥 Group Members</h2>
+
+        <div id="members">
+            Loading members...
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <h2>💰 Group Expenses</h2>
+
+        <div id="expenses">
+            Loading expenses...
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+const urlParams = new URLSearchParams(window.location.search);
+
+const groupId = urlParams.get("group_id");
+
+document.getElementById("addExpenseBtn").href =
+    `add-expense.html?group_id=${groupId}`;
+
+document.getElementById("settlementBtn").href =
+    `settlement.html?group_id=${groupId}`;
+
+
+if (!groupId) {
+
+    alert("Group ID not found");
+
+    window.location.href = "my-groups.html";
+
+}
+
+
+async function loadGroupDetails() {
+
+    try {
+
+        const response =
+            await fetch(`/group-details/${groupId}`);
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            alert(data.message || "Unable to load group");
+
+            return;
+
+        }
+
+
+        document.getElementById("groupName").textContent =
+            data.group.group_name;
+
+
+        document.getElementById("groupInfo").textContent =
+            `Group ID: ${data.group.group_id} | Created by User ${data.group.created_by}`;
+
+
+        loadMembers();
+
+        loadExpenses();
+
+
+    } catch (error) {
+
+        console.log(error);
+
+        alert("Server connection failed");
+
+    }
+
+}
+
+
+async function loadMembers() {
+
+    try {
+
+        const response =
+            await fetch(`/group-members/${groupId}`);
+
+        const data =
+            await response.json();
+
+
+        const container =
+            document.getElementById("members");
+
+
+        container.innerHTML = "";
+
+
+        if (data.length === 0) {
+
+            container.innerHTML =
+                "<p>No members found.</p>";
+
+            return;
+
+        }
+
+
+        data.forEach(member => {
+
+            const div =
+                document.createElement("div");
+
+            div.className = "member";
+
+            div.innerHTML = `
+                <strong>${member.name}</strong>
+                <br>
+                User ID: ${member.user_id}
+                <br>
+                Email: ${member.email}
+            `;
+
+            container.appendChild(div);
+
+        });
+
+
+    } catch (error) {
+
+        console.log(error);
+
+    }
+
+}
+
+
+async function loadExpenses() {
+
+    try {
+
+        const response =
+            await fetch(`/group-expenses/${groupId}`);
+
+        const data =
+            await response.json();
+
+
+        const container =
+            document.getElementById("expenses");
+
+
+        container.innerHTML = "";
+
+
+        if (data.length === 0) {
+
+            container.innerHTML =
+                "<p>No expenses yet.</p>";
+
+            return;
+
+        }
+
+
+        data.forEach(expense => {
+
+            const div =
+                document.createElement("div");
+
+            div.className = "expense";
+
+            div.innerHTML = `
+                <strong>${expense.description}</strong>
+                <br>
+                💰 ₹${Number(expense.amount).toFixed(2)}
+                <br>
+                👤 Paid by User ${expense.paid_by}
+            `;
+
+            container.appendChild(div);
+
+        });
+
+
+    } catch (error) {
+
+        console.log(error);
+
+    }
+
+}
+
+
+function addMember() {
+
+    window.location.href =
+        `add-member.html?group_id=${groupId}`;
+
+}
+
+
+
+
+
+loadGroupDetails();
+
+</script>
+
+</body>
+</html>
